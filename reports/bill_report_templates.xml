@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Document Layout Template -->
+    <template id="report_hotel_bill_document">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <!-- Title Header -->
+                <div class="row mb-4">
+                    <div class="col-6">
+                        <h2>Hotel Bill Invoice</h2>
+                        <h4>Reference: <span t-field="o.name"/></h4>
+                    </div>
+                    <div class="col-6 text-end">
+                        <h4>
+                            <span t-if="o.state == 'draft'" class="badge text-bg-secondary">Draft</span>
+                            <span t-if="o.state == 'confirmed'" class="badge text-bg-primary">Confirmed</span>
+                            <span t-if="o.state == 'paid'" class="badge text-bg-success">Paid</span>
+                            <span t-if="o.state == 'cancelled'" class="badge text-bg-danger">Cancelled</span>
+                        </h4>
+                    </div>
+                </div>
+
+                <!-- Guest and Stay Metadata -->
+                <div class="row mb-4">
+                    <div class="col-6">
+                        <strong>Guest Information:</strong>
+                        <div><span t-field="o.guest_id.name"/></div>
+                        <div>Phone: <span t-field="o.guest_id.phone"/></div>
+                        <div>ID: <span t-field="o.guest_id.national_id"/></div>
+                    </div>
+                    <div class="col-6 text-end">
+                        <strong>Stay &amp; Invoice Details:</strong>
+                        <div>Bill Date: <span t-field="o.bill_date"/></div>
+                        <div>Booking Ref: <span t-field="o.booking_id.name"/></div>
+                        <div>Room: <span t-field="o.booking_id.room_id.name"/></div>
+                        <div>Stay Type: <span t-field="o.booking_id.booking_type"/></div>
+                    </div>
+                </div>
+
+                <!-- Itemized Charges Table -->
+                <table class="table table-sm o_main_table table-striped mt-4">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Description</th>
+                            <th class="text-end">Quantity</th>
+                            <th class="text-end">Unit Price</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody class="invoice_tbody">
+                        <t t-foreach="o.line_ids" t-as="line">
+                            <tr>
+                                <td>
+                                    <span t-if="line.service_id" t-field="line.service_id.name"/>
+                                    <span t-if="not line.service_id">Custom Charge</span>
+                                </td>
+                                <td><span t-field="line.name"/></td>
+                                <td class="text-end"><span t-field="line.quantity"/></td>
+                                <td class="text-end"><span t-field="line.unit_price"/></td>
+                                <td class="text-end"><span t-field="line.amount"/></td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+
+                <!-- Totals Section -->
+                <div class="row justify-content-end mt-4">
+                    <div class="col-4">
+                        <table class="table table-sm table-borderless">
+                            <tr class="border-black o_subtotal">
+                                <td><strong>Subtotal</strong></td>
+                                <td class="text-end"><span t-field="o.subtotal_amount"/></td>
+                            </tr>
+                            <tr t-if="o.tax_percent &gt; 0">
+                                <td>Tax (<span t-field="o.tax_percent"/>%)</td>
+                                <td class="text-end"><span t-field="o.tax_amount"/></td>
+                            </tr>
+                            <tr class="border-black o_total">
+                                <td><strong>Total</strong></td>
+                                <td class="text-end"><strong t-field="o.total_amount"/></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Payment details -->
+                <div t-if="o.state == 'paid'" class="mt-4 p-3 bg-light border rounded">
+                    <strong>Payment Information:</strong>
+                    <div>Payment Method: <span t-field="o.payment_method"/></div>
+                    <div>Payment Date: <span t-field="o.payment_date"/></div>
+                </div>
+
+                <!-- Notes -->
+                <div t-if="o.note" class="mt-4">
+                    <strong>Notes:</strong>
+                    <p t-field="o.note"/>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Report Wrapper Template -->
+    <template id="report_hotel_bill">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="odoo_hms.report_hotel_bill_document"/>
+            </t>
+        </t>
+    </template>
+
+</odoo>

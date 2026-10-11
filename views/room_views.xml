@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Window Action -->
+    <record id="hotel_room_action" model="ir.actions.act_window">
+        <field name="name">Rooms</field>
+        <field name="res_model">hotel.room</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Hotel Room!
+            </p>
+        </field>
+    </record>
+
+    <!-- List View -->
+    <record id="hotel_room_tree_view" model="ir.ui.view">
+        <field name="name">hotel.room.list</field>
+        <field name="model">hotel.room</field>
+        <field name="arch" type="xml">
+            <list string="Rooms">
+                <field name="name"/>
+                <field name="floor"/>
+                <field name="room_type"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="price" widget="monetary"/>
+                <field name="hourly_rate" widget="monetary"/>
+                <field name="status" widget="badge" 
+                       decoration-success="status == 'available'" 
+                       decoration-danger="status == 'occupied'"/>
+                <field name="housekeeping_status" widget="badge"
+                       decoration-success="housekeeping_status == 'clean'"
+                       decoration-danger="housekeeping_status == 'dirty'"
+                       decoration-info="housekeeping_status == 'cleaning'"
+                       decoration-warning="housekeeping_status == 'maintenance'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="hotel_room_form_view" model="ir.ui.view">
+        <field name="name">hotel.room.form</field>
+        <field name="model">hotel.room</field>
+        <field name="arch" type="xml">
+            <form string="Hotel Room">
+                <header>
+                    <button name="action_set_available" type="object" string="Set Available" class="oe_highlight" invisible="status == 'available'"/>
+                    <button name="action_set_occupied" type="object" string="Set Occupied" invisible="status == 'occupied'"/>
+                    <button name="action_mark_clean" type="object" string="Mark Cleaned" class="btn-success" invisible="housekeeping_status == 'clean'"/>
+                    <button name="action_mark_dirty" type="object" string="Mark Dirty" invisible="housekeeping_status == 'dirty'"/>
+                    <field name="status" widget="statusbar" statusbar_visible="available,occupied"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_housekeeping_tasks"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-tasks">
+                            <field name="housekeeping_task_count" widget="statinfo" string="Cleaning Tasks"/>
+                        </button>
+                        <button name="action_view_maintenance_requests"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-wrench">
+                            <field name="maintenance_request_count" widget="statinfo" string="Maintenance"/>
+                        </button>
+                    </div>
+                    <field name="image" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <label for="name" string="Room Name / Number"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Room 101"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Room Details">
+                            <field name="room_type"/>
+                            <field name="floor"/>
+                            <field name="housekeeping_status" widget="badge"
+                                   decoration-success="housekeeping_status == 'clean'"
+                                   decoration-danger="housekeeping_status == 'dirty'"
+                                   decoration-info="housekeeping_status == 'cleaning'"
+                                   decoration-warning="housekeeping_status == 'maintenance'"/>
+                        </group>
+                        <group string="Pricing &amp; Rates">
+                            <field name="currency_id"/>
+                            <field name="price" widget="monetary"/>
+                            <field name="hourly_rate" widget="monetary"/>
+                            <field name="min_hourly_hours"/>
+                        </group>
+                    </group>
+                </sheet>
+                <!-- Chatter for Activity & Logs Tracking -->
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Kanban View -->
+    <record id="hotel_room_kanban_view" model="ir.ui.view">
+        <field name="name">hotel.room.kanban</field>
+        <field name="model">hotel.room</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="status" class="o_kanban_small_column">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="room_type"/>
+                <field name="price"/>
+                <field name="hourly_rate"/>
+                <field name="currency_id"/>
+                <field name="status"/>
+                <field name="housekeeping_status"/>
+                <field name="floor"/>
+                <field name="image"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex flex-row align-items-center">
+                            <field name="image" widget="image" options="{'zoom': true, 'preview_image': 'image'}" class="o_kanban_image_fill_left me-2" style="max-width: 80px; max-height: 80px; object-fit: cover; border-radius: 4px;"/>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="fw-bold fs-5">
+                                        <field name="name"/>
+                                    </div>
+                                    <field name="housekeeping_status" widget="badge"
+                                           decoration-success="housekeeping_status == 'clean'"
+                                           decoration-danger="housekeeping_status == 'dirty'"
+                                           decoration-info="housekeeping_status == 'cleaning'"
+                                           decoration-warning="housekeeping_status == 'maintenance'"/>
+                                </div>
+                                <div class="text-muted">
+                                    <span>Floor: </span><field name="floor"/> | <field name="room_type"/>
+                                </div>
+                                <div class="fw-semibold text-primary mt-1">
+                                    Night: <field name="price" widget="monetary"/> | Hour: <field name="hourly_rate" widget="monetary"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="hotel_room_search_view" model="ir.ui.view">
+        <field name="name">hotel.room.search</field>
+        <field name="model">hotel.room</field>
+        <field name="arch" type="xml">
+            <search string="Search Rooms">
+                <field name="name"/>
+                <field name="room_type"/>
+                <field name="floor"/>
+                
+                <filter string="Available Rooms" name="available" domain="[('status', '=', 'available')]"/>
+                <filter string="Occupied Rooms" name="occupied" domain="[('status', '=', 'occupied')]"/>
+                <filter string="Needs Cleaning (Dirty)" name="dirty" domain="[('housekeeping_status', '=', 'dirty')]"/>
+                <filter string="Under Maintenance" name="maintenance" domain="[('housekeeping_status', '=', 'maintenance')]"/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_by_status" context="{'group_by': 'status'}"/>
+                    <filter string="Housekeeping Status" name="group_by_housekeeping_status" context="{'group_by': 'housekeeping_status'}"/>
+                    <filter string="Room Type" name="group_by_room_type" context="{'group_by': 'room_type'}"/>
+                    <filter string="Floor" name="group_by_floor" context="{'group_by': 'floor'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+</odoo>

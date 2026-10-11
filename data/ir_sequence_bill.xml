@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Sequence for Hotel Bills / Invoices -->
+        <record id="seq_hotel_bill" model="ir.sequence">
+            <field name="name">Hotel Bill Sequence</field>
+            <field name="code">hotel.bill</field>
+            <field name="prefix">INV-</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+    </data>
+</odoo>

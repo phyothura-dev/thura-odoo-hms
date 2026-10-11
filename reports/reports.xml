@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Native Odoo PDF Report Action Binding -->
+    <record id="action_report_hotel_bill" model="ir.actions.report">
+        <field name="name">Hotel Bill Invoice</field>
+        <field name="model">hotel.bill</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">odoo_hms.report_hotel_bill</field>
+        <field name="report_file">odoo_hms.report_hotel_bill</field>
+        <field name="binding_model_id" ref="model_hotel_bill"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

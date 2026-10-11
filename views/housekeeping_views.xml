@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ───────────────────────────────────────── -->
+    <!-- Housekeeping Tasks Actions & Views -->
+    <!-- ───────────────────────────────────────── -->
+
+    <record id="action_hotel_housekeeping_task" model="ir.actions.act_window">
+        <field name="name">Housekeeping Tasks</field>
+        <field name="res_model">hotel.housekeeping.task</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Housekeeping Task!
+            </p>
+        </field>
+    </record>
+
+    <!-- Housekeeping Task List View -->
+    <record id="view_hotel_housekeeping_task_list" model="ir.ui.view">
+        <field name="name">hotel.housekeeping.task.list</field>
+        <field name="model">hotel.housekeeping.task</field>
+        <field name="arch" type="xml">
+            <list string="Housekeeping Tasks">
+                <field name="name"/>
+                <field name="room_id"/>
+                <field name="cleaning_type"/>
+                <field name="assigned_to_id"/>
+                <field name="scheduled_date"/>
+                <field name="priority" widget="priority"/>
+                <field name="state" widget="badge"
+                       decoration-muted="state == 'draft'"
+                       decoration-info="state == 'in_progress'"
+                       decoration-success="state == 'done'"
+                       decoration-danger="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Housekeeping Task Kanban View -->
+    <record id="view_hotel_housekeeping_task_kanban" model="ir.ui.view">
+        <field name="name">hotel.housekeeping.task.kanban</field>
+        <field name="model">hotel.housekeeping.task</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" sample="1">
+                <field name="name"/>
+                <field name="room_id"/>
+                <field name="cleaning_type"/>
+                <field name="assigned_to_id"/>
+                <field name="priority"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex flex-column gap-1 p-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong class="o_kanban_record_title fs-6 text-primary">
+                                    <field name="name"/>
+                                </strong>
+                                <field name="priority" widget="priority"/>
+                            </div>
+                            <div class="text-muted small">
+                                <span>Room: </span><strong class="text-dark"><field name="room_id"/></strong>
+                            </div>
+                            <div class="text-muted small">
+                                <span>Type: </span><field name="cleaning_type"/>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <span class="small text-muted"><field name="assigned_to_id"/></span>
+                                <field name="state" widget="badge"
+                                       decoration-muted="state == 'draft'"
+                                       decoration-info="state == 'in_progress'"
+                                       decoration-success="state == 'done'"
+                                       decoration-danger="state == 'cancelled'"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Housekeeping Task Form View -->
+    <record id="view_hotel_housekeeping_task_form" model="ir.ui.view">
+        <field name="name">hotel.housekeeping.task.form</field>
+        <field name="model">hotel.housekeeping.task</field>
+        <field name="arch" type="xml">
+            <form string="Housekeeping Task">
+                <header>
+                    <button name="action_start_cleaning" string="Start Cleaning" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_complete_cleaning" string="Mark Completed" type="object" class="btn-success" invisible="state != 'in_progress'"/>
+                    <button name="action_cancel" string="Cancel" type="object" invisible="state in ('done', 'cancelled')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="room_id"/>
+                            <field name="cleaning_type"/>
+                            <field name="assigned_to_id"/>
+                        </group>
+                        <group>
+                            <field name="scheduled_date"/>
+                            <field name="completed_date"/>
+                            <field name="priority" widget="priority"/>
+                        </group>
+                    </group>
+                    <field name="notes" placeholder="Cleaning notes or special instructions..."/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ───────────────────────────────────────── -->
+    <!-- Maintenance Requests Actions & Views -->
+    <!-- ───────────────────────────────────────── -->
+
+    <record id="action_hotel_maintenance_request" model="ir.actions.act_window">
+        <field name="name">Maintenance Requests</field>
+        <field name="res_model">hotel.maintenance.request</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Report your first Room Maintenance Issue!
+            </p>
+        </field>
+    </record>
+
+    <!-- Maintenance Request List View -->
+    <record id="view_hotel_maintenance_request_list" model="ir.ui.view">
+        <field name="name">hotel.maintenance.request.list</field>
+        <field name="model">hotel.maintenance.request</field>
+        <field name="arch" type="xml">
+            <list string="Maintenance Requests">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="room_id"/>
+                <field name="category"/>
+                <field name="assigned_to_id"/>
+                <field name="request_date"/>
+                <field name="priority" widget="priority"/>
+                <field name="state" widget="badge"
+                       decoration-warning="state == 'draft'"
+                       decoration-info="state == 'in_progress'"
+                       decoration-success="state == 'resolved'"
+                       decoration-muted="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Maintenance Request Kanban View -->
+    <record id="view_hotel_maintenance_request_kanban" model="ir.ui.view">
+        <field name="name">hotel.maintenance.request.kanban</field>
+        <field name="model">hotel.maintenance.request</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" sample="1">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="room_id"/>
+                <field name="category"/>
+                <field name="priority"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex flex-column gap-1 p-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong class="o_kanban_record_title fs-6 text-danger">
+                                    <field name="name"/>
+                                </strong>
+                                <field name="priority" widget="priority"/>
+                            </div>
+                            <div class="text-muted small">
+                                <span>Room: </span><strong class="text-dark"><field name="room_id"/></strong>
+                            </div>
+                            <div class="text-muted small">
+                                <span>Category: </span><field name="category"/>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <span class="small text-muted"><field name="code"/></span>
+                                <field name="state" widget="badge"
+                                       decoration-warning="state == 'draft'"
+                                       decoration-info="state == 'in_progress'"
+                                       decoration-success="state == 'resolved'"
+                                       decoration-muted="state == 'cancelled'"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Maintenance Request Form View -->
+    <record id="view_hotel_maintenance_request_form" model="ir.ui.view">
+        <field name="name">hotel.maintenance.request.form</field>
+        <field name="model">hotel.maintenance.request</field>
+        <field name="arch" type="xml">
+            <form string="Maintenance Request">
+                <header>
+                    <button name="action_start_repair" string="Start Repair Work" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_resolve_repair" string="Mark Resolved" type="object" class="btn-success" invisible="state != 'in_progress'"/>
+                    <button name="action_cancel" string="Cancel" type="object" invisible="state in ('resolved', 'cancelled')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,resolved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="code" readonly="1"/>
+                        </h1>
+                        <h2>
+                            <field name="name" placeholder="e.g. AC Cooling Repair"/>
+                        </h2>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="room_id"/>
+                            <field name="category"/>
+                            <field name="reported_by_id"/>
+                            <field name="assigned_to_id"/>
+                        </group>
+                        <group>
+                            <field name="request_date"/>
+                            <field name="resolved_date"/>
+                            <field name="priority" widget="priority"/>
+                        </group>
+                    </group>
+                    <field name="description" placeholder="Detailed issue description..."/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

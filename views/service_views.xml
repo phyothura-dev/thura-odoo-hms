@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- List View -->
+    <record id="view_hotel_service_tree" model="ir.ui.view">
+        <field name="name">hotel.service.list</field>
+        <field name="model">hotel.service</field>
+        <field name="arch" type="xml">
+            <list string="Services Catalog">
+                <field name="name"/>
+                <field name="list_price" widget="monetary"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_hotel_service_form" model="ir.ui.view">
+        <field name="name">hotel.service.form</field>
+        <field name="model">hotel.service</field>
+        <field name="arch" type="xml">
+            <form string="Service &amp; Product Item">
+                <sheet>
+                    <field name="active" invisible="1"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Minibar - Heineken, Laundry Shirt, Airport Shuttle..."/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="list_price" widget="monetary"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Description &amp; Notes">
+                            <field name="note" placeholder="Provide additional details or service specifications..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Kanban View -->
+    <record id="view_hotel_service_kanban" model="ir.ui.view">
+        <field name="name">hotel.service.kanban</field>
+        <field name="model">hotel.service</field>
+        <field name="arch" type="xml">
+            <kanban sample="1">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="list_price"/>
+                <field name="currency_id"/>
+
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex flex-column gap-1 p-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong class="o_kanban_record_title fs-6 text-primary">
+                                    <field name="name"/>
+                                </strong>
+                            </div>
+                            <div class="d-flex justify-content-end align-items-center mt-2">
+                                <span class="fw-bold text-success fs-6">
+                                    <field name="list_price" widget="monetary"/>
+                                </span>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_hotel_service_search" model="ir.ui.view">
+        <field name="name">hotel.service.search</field>
+        <field name="model">hotel.service</field>
+        <field name="arch" type="xml">
+            <search string="Search Services">
+                <field name="name"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_hotel_service" model="ir.actions.act_window">
+        <field name="name">Extra Services Catalog</field>
+        <field name="res_model">hotel.service</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_hotel_service_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add extra hotel services and product items!
+            </p>
+            <p>
+                Configure items for Minibar, Laundry, Room Service, Spa, and Transport to auto-populate prices on billing.
+            </p>
+        </field>
+    </record>
+
+</odoo>

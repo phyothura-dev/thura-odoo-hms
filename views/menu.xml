@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Top Root Menu -->
+    <menuitem id="hotel_root_menu" name="Hotel Management" web_icon="odoo_hms,static/description/icon.png" sequence="10"/>
+
+    <!-- Main Front Desk Operations -->
+    <menuitem id="hotel_operations_menu" name="Front Desk" parent="hotel_root_menu" sequence="10"/>
+    <menuitem id="hotel_booking_menu" name="Bookings" parent="hotel_operations_menu" action="hotel_booking_action" sequence="10"/>
+    <menuitem id="hotel_guest_menu" name="Guests" parent="hotel_operations_menu" action="hotel_guest_action" sequence="20"/>
+    <menuitem id="hotel_room_menu" name="Rooms" parent="hotel_operations_menu" action="hotel_room_action" sequence="30"/>
+
+    <!-- Housekeeping & Maintenance Menu -->
+    <menuitem id="hotel_housekeeping_menu" name="Housekeeping &amp; Maintenance" parent="hotel_root_menu" sequence="20"/>
+    <menuitem id="hotel_housekeeping_task_menu" name="Cleaning Tasks" parent="hotel_housekeeping_menu" action="action_hotel_housekeeping_task" sequence="10"/>
+    <menuitem id="hotel_maintenance_request_menu" name="Maintenance Requests" parent="hotel_housekeeping_menu" action="action_hotel_maintenance_request" sequence="20"/>
+
+    <!-- Finance & Billing -->
+    <menuitem id="hotel_finance_menu" name="Finance &amp; Services" parent="hotel_root_menu" sequence="30"/>
+    <menuitem id="hotel_bill_menu" name="Guest Bills" parent="hotel_finance_menu" action="hotel_bill_action" sequence="10"/>
+    <menuitem id="hotel_service_menu" name="Services Catalog" parent="hotel_finance_menu" action="action_hotel_service" sequence="20"/>
+
+    <!-- Operations Menu -->
+    <menuitem id="hotel_operations_menu" name="Operations" parent="hotel_root_menu" sequence="35"/>
+    <menuitem id="hotel_housekeeping_task_menu" name="Cleaning Tasks" parent="hotel_operations_menu" action="action_hotel_housekeeping_task" sequence="10"/>
+    <menuitem id="hotel_maintenance_request_menu" name="Maintenance Requests" parent="hotel_operations_menu" action="action_hotel_maintenance_request" sequence="20"/>
+
+    <!-- Reporting Actions -->
+    <record id="action_hotel_booking_report" model="ir.actions.act_window">
+        <field name="name">Bookings Analysis</field>
+        <field name="res_model">hotel.booking</field>
+        <field name="view_mode">graph,pivot</field>
+    </record>
+
+    <record id="action_hotel_bill_report" model="ir.actions.act_window">
+        <field name="name">Revenue Analysis</field>
+        <field name="res_model">hotel.bill</field>
+        <field name="view_mode">graph,pivot</field>
+    </record>
+
+    <!-- Reporting Menus -->
+    <menuitem id="hotel_reporting_menu" name="Reporting" parent="hotel_root_menu" sequence="40" groups="group_hotel_admin"/>
+    <menuitem id="hotel_reporting_booking_menu" name="Bookings Analysis" parent="hotel_reporting_menu" action="action_hotel_booking_report" sequence="10"/>
+    <menuitem id="hotel_reporting_bill_menu" name="Revenue Analysis" parent="hotel_reporting_menu" action="action_hotel_bill_report" sequence="20"/>
+
+    <!-- Configuration & Rates Menus -->
+    <menuitem id="hotel_config_menu" name="Configuration" parent="hotel_root_menu" sequence="50" groups="group_hotel_admin"/>
+    <menuitem id="hotel_rate_plan_menu" name="Seasonal Rate Plans" parent="hotel_config_menu" action="action_hotel_rate_plan" sequence="10"/>
+    <menuitem id="hotel_promo_code_menu" name="Promo Codes &amp; Discounts" parent="hotel_config_menu" action="action_hotel_promo_code" sequence="20"/>
+
+</odoo>

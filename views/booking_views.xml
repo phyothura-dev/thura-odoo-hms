@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Window Action -->
+    <record id="hotel_booking_action" model="ir.actions.act_window">
+        <field name="name">Bookings</field>
+        <field name="res_model">hotel.booking</field>
+        <field name="view_mode">kanban,calendar,list,form,graph,pivot</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Hotel Booking!
+            </p>
+        </field>
+    </record>
+
+    <!-- Calendar View -->
+    <record id="hotel_booking_calendar_view" model="ir.ui.view">
+        <field name="name">hotel.booking.calendar</field>
+        <field name="model">hotel.booking</field>
+        <field name="arch" type="xml">
+            <calendar string="Booking Calendar" date_start="checkin_date" date_stop="checkout_date" color="state"
+                      mode="month">
+                <field name="name"/>
+                <field name="guest_id"/>
+                <field name="room_id"/>
+                <field name="booking_type"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- List View -->
+    <record id="hotel_booking_tree_view" model="ir.ui.view">
+        <field name="name">hotel.booking.list</field>
+        <field name="model">hotel.booking</field>
+        <field name="arch" type="xml">
+            <list string="Bookings" decoration-warning="is_overdue == True">
+                <field name="name"/>
+                <field name="guest_id"/>
+                <field name="room_id"/>
+                <field name="booking_type" widget="badge"/>
+                <field name="checkin_date"/>
+                <field name="checkout_date"/>
+                <field name="duration"/>
+                <field name="rate_plan_id"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="discount_amount" widget="monetary"/>
+                <field name="total_amount" widget="monetary"/>
+                <field name="is_overdue" column_invisible="True"/>
+                <field name="state" widget="badge"
+                       decoration-muted="state == 'draft'"
+                       decoration-info="state == 'checked_in'"
+                       decoration-success="state == 'checked_out'"
+                       decoration-danger="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="hotel_booking_form_view" model="ir.ui.view">
+        <field name="name">hotel.booking.form</field>
+        <field name="model">hotel.booking</field>
+        <field name="arch" type="xml">
+            <form string="Hotel Booking">
+                <header>
+                    <button name="action_check_in" type="object" string="Check In" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_check_out" type="object" string="Check Out" class="oe_highlight"
+                            invisible="state != 'checked_in'"/>
+                    <button name="action_create_bill" type="object" string="Create Bill" class="btn-primary"
+                            invisible="state != 'checked_out' or bill_count &gt; 0"/>
+                    <button name="action_cancel" type="object" string="Cancel Booking"
+                            invisible="state not in ('draft', 'checked_in')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,checked_in,checked_out"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_bills"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o">
+                            <field name="bill_count" widget="statinfo" string="Bills"/>
+                        </button>
+                    </div>
+
+                    <!-- Overdue Banner (Visible only if checked_in and current time > checkout_date) -->
+                    <div class="alert alert-danger mb-3" role="alert" invisible="not is_overdue">
+                        <strong>⚠️ Check-out Overdue!</strong>
+                        This guest was scheduled to check out on
+                        <field name="checkout_date" readonly="1" nolabel="1"/>
+                        but has not checked out yet.
+                    </div>
+
+                    <div class="oe_title">
+                        <label for="name" string="Booking Reference"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Guest &amp; Room">
+                            <field name="guest_id"/>
+                            <field name="room_id"/>
+                            <field name="booking_type"/>
+                        </group>
+                        <group string="Stay Duration">
+                            <field name="checkin_date"/>
+                            <field name="checkout_date"/>
+                        </group>
+                    </group>
+
+                    <group string="Rate Plan &amp; Discounts">
+                        <group>
+                            <field name="rate_plan_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="promo_code_id" placeholder="Select or enter Promo Code"/>
+                        </group>
+                    </group>
+
+                    <group string="Pricing Calculation">
+                        <group>
+                            <field name="duration"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="unit_price" widget="monetary"/>
+                            <field name="discount_amount" widget="monetary"/>
+                        </group>
+                        <group>
+                            <field name="total_amount" widget="monetary"
+                                   class="oe_subtotal_footer_separator"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Internal Notes">
+                            <field name="note" placeholder="Add special preferences, flight info, etc..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <!-- Chatter for Activity & Logs Tracking -->
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Kanban View -->
+    <record id="hotel_booking_kanban_view" model="ir.ui.view">
+        <field name="name">hotel.booking.kanban</field>
+        <field name="model">hotel.booking</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" sample="1">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="guest_id"/>
+                <field name="room_id"/>
+                <field name="checkin_date"/>
+                <field name="checkout_date"/>
+                <field name="total_amount"/>
+                <field name="state"/>
+                <field name="is_overdue"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex flex-column gap-1 p-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong class="o_kanban_record_title fs-6 text-primary">
+                                    <field name="name"/>
+                                </strong>
+                                <field name="state" widget="badge"
+                                       decoration-muted="state == 'draft'"
+                                       decoration-info="state == 'checked_in'"
+                                       decoration-success="state == 'checked_out'"
+                                       decoration-danger="state == 'cancelled'"/>
+                            </div>
+                            <div class="text-muted small">
+                                <span>Guest: </span><field name="guest_id"/>
+                            </div>
+                            <div class="text-muted small">
+                                <span>Room: </span><field name="room_id"/>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <span class="fw-bold text-success">
+                                    <field name="total_amount"/>
+                                </span>
+                                <span t-if="record.is_overdue.raw_value" class="badge text-bg-danger">
+                                    Overdue
+                                </span>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="hotel_booking_search_view" model="ir.ui.view">
+        <field name="name">hotel.booking.search</field>
+        <field name="model">hotel.booking</field>
+        <field name="arch" type="xml">
+            <search string="Search Bookings">
+                <field name="name"/>
+                <field name="guest_id"/>
+                <field name="room_id"/>
+                <field name="rate_plan_id"/>
+                <field name="promo_code_id"/>
+
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Checked In" name="checked_in" domain="[('state', '=', 'checked_in')]"/>
+                <filter string="Checked Out" name="checked_out" domain="[('state', '=', 'checked_out')]"/>
+                <separator/>
+                <filter string="Nightly Bookings" name="nightly" domain="[('booking_type', '=', 'nightly')]"/>
+                <filter string="Hourly Bookings" name="hourly" domain="[('booking_type', '=', 'hourly')]"/>
+                <separator/>
+                <filter string="Overdue Bookings" name="overdue" domain="[('is_overdue', '=', True)]"/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_by_state" context="{'group_by': 'state'}"/>
+                    <filter string="Booking Type" name="group_by_booking_type" context="{'group_by': 'booking_type'}"/>
+                    <filter string="Rate Plan" name="group_by_rate_plan" context="{'group_by': 'rate_plan_id'}"/>
+                    <filter string="Room" name="group_by_room" context="{'group_by': 'room_id'}"/>
+                    <filter string="Guest" name="group_by_guest" context="{'group_by': 'guest_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Graph View -->
+    <record id="hotel_booking_view_graph" model="ir.ui.view">
+        <field name="name">hotel.booking.graph</field>
+        <field name="model">hotel.booking</field>
+        <field name="arch" type="xml">
+            <graph string="Bookings Analysis" type="bar" sample="1">
+                <field name="checkin_date" interval="month"/>
+                <field name="booking_type"/>
+                <field name="total_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Pivot View -->
+    <record id="hotel_booking_view_pivot" model="ir.ui.view">
+        <field name="name">hotel.booking.pivot</field>
+        <field name="model">hotel.booking</field>
+        <field name="arch" type="xml">
+            <pivot string="Bookings Analysis" sample="1">
+                <field name="room_id" type="row"/>
+                <field name="booking_type" type="col"/>
+                <field name="total_amount" type="measure"/>
+                <field name="duration" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+</odoo>

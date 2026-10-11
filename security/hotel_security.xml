@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Module Category -->
+    <record id="module_category_hms" model="ir.module.category">
+        <field name="name">Hotel Management</field>
+        <field name="description">User access levels for Hotel Management System</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <!-- Receptionist Group -->
+    <record id="group_hotel_receptionist" model="res.groups">
+        <field name="name">Receptionist</field>
+        <field name="category_id" ref="module_category_hms"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Receptionists can manage bookings, check-in/out guests, and view rooms.</field>
+    </record>
+
+    <!-- Admin / Manager Group -->
+    <record id="group_hotel_admin" model="res.groups">
+        <field name="name">Manager / Admin</field>
+        <field name="category_id" ref="module_category_hms"/>
+        <field name="implied_ids" eval="[(4, ref('group_hotel_receptionist'))]"/>
+        <field name="comment">Full management access including configuration and pricing.</field>
+    </record>
+
+</odoo>

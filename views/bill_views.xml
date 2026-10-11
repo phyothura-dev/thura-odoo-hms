@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Window Action -->
+    <record id="hotel_bill_action" model="ir.actions.act_window">
+        <field name="name">Bills</field>
+        <field name="res_model">hotel.bill</field>
+        <field name="view_mode">kanban,list,form,graph,pivot</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Hotel Bill!
+            </p>
+        </field>
+    </record>
+
+
+    <!-- List View -->
+    <record id="hotel_bill_tree_view" model="ir.ui.view">
+        <field name="name">hotel.bill.list</field>
+        <field name="model">hotel.bill</field>
+        <field name="arch" type="xml">
+            <list string="Bills" decoration-success="state == 'paid'"
+                  decoration-info="state == 'confirmed'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="booking_id"/>
+                <field name="guest_id"/>
+                <field name="bill_date"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="subtotal_amount" widget="monetary"/>
+                <field name="total_amount" widget="monetary"/>
+                <field name="payment_method"/>
+                <field name="state" widget="badge"
+                       decoration-muted="state == 'draft'"
+                       decoration-info="state == 'confirmed'"
+                       decoration-success="state == 'paid'"
+                       decoration-danger="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+
+    <!-- Form View -->
+    <record id="hotel_bill_form_view" model="ir.ui.view">
+        <field name="name">hotel.bill.form</field>
+        <field name="model">hotel.bill</field>
+        <field name="arch" type="xml">
+            <form string="Hotel Bill">
+                <header>
+                    <button name="action_confirm"
+                            type="object"
+                            string="Confirm Bill"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_register_payment"
+                            type="object"
+                            string="Register Payment"
+                            class="btn-success"
+                            invisible="state != 'confirmed'"/>
+
+                    <button name="action_reset_draft"
+                            type="object"
+                            string="Reset to Draft"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed,paid"/>
+                </header>
+                <sheet>
+                    <!-- Paid Banner -->
+                    <div class="alert alert-success mb-3" role="alert" invisible="state != 'paid'">
+                        <strong>✅ Payment Received!</strong>
+                        This bill has been fully paid via
+                        <field name="payment_method" readonly="1" nolabel="1"/>
+                        on <field name="payment_date" readonly="1" nolabel="1"/>.
+                    </div>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Booking Information">
+                            <field name="booking_id"/>
+                            <field name="guest_id" readonly="1"/>
+                            <field name="room_id" readonly="1"/>
+                        </group>
+                        <group string="Bill Details">
+                            <field name="bill_date"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="payment_method"
+                                   invisible="state not in ('confirmed', 'paid')"/>
+                            <field name="payment_date"
+                                   invisible="state != 'paid'"/>
+                        </group>
+                    </group>
+
+
+                    <!-- Charge Line Items -->
+                    <notebook>
+                        <page string="Charge Items">
+                            <field name="line_ids"
+                                   readonly="state in ('paid', 'cancelled')">
+                                <list editable="bottom">
+                                    <field name="service_id"/>
+                                    <field name="name"/>
+                                    <field name="quantity"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="unit_price" widget="monetary"/>
+                                    <field name="amount" widget="monetary" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="note" placeholder="Additional notes or remarks..."/>
+                        </page>
+                    </notebook>
+
+                    <!-- Totals Summary -->
+                    <group class="oe_subtotal_footer">
+                        <field name="subtotal_amount"
+                                widget="monetary"
+                                options="{'currency_field': 'currency_id'}"
+                                readonly="1"/>
+                        <field name="tax_percent"
+                                string="Tax (%)"
+                                readonly="state in ('paid', 'cancelled')"/>
+                        <field name="tax_amount"
+                                widget="monetary"
+                                options="{'currency_field': 'currency_id'}"
+                                readonly="1"/>
+                        <field name="total_amount"
+                                class="oe_subtotal_footer_separator"
+                                widget="monetary"
+                                options="{'currency_field': 'currency_id'}"
+                                readonly="1"/>
+                    </group>
+                    <div class="clearfix"/>
+                </sheet>
+                <!-- Chatter for Audit & Logs -->
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="hotel_bill_search_view" model="ir.ui.view">
+        <field name="name">hotel.bill.search</field>
+        <field name="model">hotel.bill</field>
+        <field name="arch" type="xml">
+            <search string="Search Bills">
+                <field name="name"/>
+                <field name="booking_id"/>
+                <field name="guest_id"/>
+
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Confirmed" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter string="Paid" name="paid" domain="[('state', '=', 'paid')]"/>
+                <filter string="Cancelled" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <filter string="Cash" name="cash" domain="[('payment_method', '=', 'cash')]"/>
+                <filter string="Card" name="card" domain="[('payment_method', '=', 'card')]"/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_by_state" context="{'group_by': 'state'}"/>
+                    <filter string="Guest" name="group_by_guest" context="{'group_by': 'guest_id'}"/>
+                    <filter string="Payment Method" name="group_by_payment" context="{'group_by': 'payment_method'}"/>
+                    <filter string="Bill Date" name="group_by_date" context="{'group_by': 'bill_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Kanban View -->
+    <record id="view_hotel_bill_kanban" model="ir.ui.view">
+        <field name="name">hotel.bill.kanban</field>
+        <field name="model">hotel.bill</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" sample="1">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="guest_id"/>
+                <field name="total_amount"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex flex-column gap-1 p-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong class="o_kanban_record_title fs-6 text-primary">
+                                    <field name="name"/>
+                                </strong>
+                            </div>
+                            <div class="text-muted small">
+                                <span>Guest: </span><field name="guest_id"/>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <field name="state" widget="badge"
+                                       decoration-muted="state == 'draft'"
+                                       decoration-info="state == 'confirmed'"
+                                       decoration-success="state == 'paid'"
+                                       decoration-danger="state == 'cancelled'"/>
+                                <span class="fw-bold text-success">
+                                    <field name="total_amount"/>
+                                </span>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Graph View -->
+    <record id="hotel_bill_view_graph" model="ir.ui.view">
+        <field name="name">hotel.bill.graph</field>
+        <field name="model">hotel.bill</field>
+        <field name="arch" type="xml">
+            <graph string="Revenue Analysis" type="bar" sample="1">
+                <field name="bill_date" interval="month"/>
+                <field name="payment_method"/>
+                <field name="total_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Pivot View -->
+    <record id="hotel_bill_view_pivot" model="ir.ui.view">
+        <field name="name">hotel.bill.pivot</field>
+        <field name="model">hotel.bill</field>
+        <field name="arch" type="xml">
+            <pivot string="Revenue Analysis" sample="1">
+                <field name="payment_method" type="row"/>
+                <field name="state" type="col"/>
+                <field name="total_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+</odoo>

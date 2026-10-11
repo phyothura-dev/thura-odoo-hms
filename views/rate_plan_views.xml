@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ───────────────────────────────────────── -->
+    <!-- Rate Plans Actions & Views -->
+    <!-- ───────────────────────────────────────── -->
+
+    <record id="action_hotel_rate_plan" model="ir.actions.act_window">
+        <field name="name">Seasonal Rate Plans</field>
+        <field name="res_model">hotel.rate.plan</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Define your first Seasonal Rate Plan!
+            </p>
+        </field>
+    </record>
+
+    <!-- Rate Plan List View -->
+    <record id="view_hotel_rate_plan_list" model="ir.ui.view">
+        <field name="name">hotel.rate.plan.list</field>
+        <field name="model">hotel.rate.plan</field>
+        <field name="arch" type="xml">
+            <list string="Rate Plans">
+                <field name="priority"/>
+                <field name="name"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="applied_on"/>
+                <field name="room_type"/>
+                <field name="computation_type"/>
+                <field name="amount"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Rate Plan Form View -->
+    <record id="view_hotel_rate_plan_form" model="ir.ui.view">
+        <field name="name">hotel.rate.plan.form</field>
+        <field name="model">hotel.rate.plan</field>
+        <field name="arch" type="xml">
+            <form string="Seasonal Rate Plan">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="e.g. Summer High Season Rate (+20%)"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Validity &amp; Priority">
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="priority"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Applies To &amp; Pricing Rule">
+                            <field name="applied_on"/>
+                            <field name="room_type" invisible="applied_on != 'room_type'" required="applied_on == 'room_type'"/>
+                            <field name="computation_type"/>
+                            <field name="amount"/>
+                        </group>
+                    </group>
+                    <field name="notes" placeholder="Rate plan terms, conditions or internal notes..."/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ───────────────────────────────────────── -->
+    <!-- Promo Codes Actions & Views -->
+    <!-- ───────────────────────────────────────── -->
+
+    <record id="action_hotel_promo_code" model="ir.actions.act_window">
+        <field name="name">Promo Codes &amp; Discounts</field>
+        <field name="res_model">hotel.promo.code</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Promo Code!
+            </p>
+        </field>
+    </record>
+
+    <!-- Promo Code List View -->
+    <record id="view_hotel_promo_code_list" model="ir.ui.view">
+        <field name="name">hotel.promo.code.list</field>
+        <field name="model">hotel.promo.code</field>
+        <field name="arch" type="xml">
+            <list string="Promo Codes">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="discount_type"/>
+                <field name="discount_value"/>
+                <field name="valid_from"/>
+                <field name="valid_to"/>
+                <field name="use_count"/>
+                <field name="max_uses"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Promo Code Form View -->
+    <record id="view_hotel_promo_code_form" model="ir.ui.view">
+        <field name="name">hotel.promo.code.form</field>
+        <field name="model">hotel.promo.code</field>
+        <field name="arch" type="xml">
+            <form string="Promo Code">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="code" placeholder="e.g. SUMMER2026"/>
+                        </h1>
+                        <h2>
+                            <field name="name" placeholder="e.g. Summer Special 15% Off"/>
+                        </h2>
+                    </div>
+                    <group>
+                        <group string="Discount Configuration">
+                            <field name="discount_type"/>
+                            <field name="discount_value"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Validity &amp; Usage Limits">
+                            <field name="valid_from"/>
+                            <field name="valid_to"/>
+                            <field name="max_uses"/>
+                            <field name="use_count" readonly="1"/>
+                        </group>
+                    </group>
+                    <field name="notes" placeholder="Terms and redemption instructions..."/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>
