@@ -1,0 +1,77 @@
+# HMS Odoo 18 — .gitignore
+# ==========================
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+
+# ── Virtual Environments ──────────────────────────────────────────────────────
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# ── Odoo Specific ─────────────────────────────────────────────────────────────
+# Server log files
+logs/
+*.log
+
+# Odoo filestore (uploaded files, session data)
+filestore/
+sessions/
+
+# Odoo compiled assets
+addons/*/static/src/js/*.min.js
+addons/*/static/src/css/*.min.css
+
+# ── IDE / Editor ──────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ── Testing ───────────────────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# ── Database dumps ────────────────────────────────────────────────────────────
+*.sql
+*.dump
+*.backup
+
+# ── Secrets & Production Server Configurations ─────────────────────────────────
+.env
+odoo.conf
+odoo.prod.conf
+docker-compose.prod.yml
+config/odoo_prod.conf

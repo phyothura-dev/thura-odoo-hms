@@ -1,0 +1,23 @@
+[options]
+; Master Password
+admin_passwd = admin
+list_db = True
+
+; Enable Proxy Mode for Reverse Proxy & WebSockets
+proxy_mode = True
+
+; Addons Path inside Docker Container (/opt/custom-addons)
+addons_path = /opt/custom-addons,/usr/lib/python3/dist-packages/odoo/addons
+
+; Workers = 0 for Local Development (Required for Live Code Reloading)
+workers = 0
+max_cron_threads = 1
+
+; Database Connection (points to 'db' container)
+db_host = db
+db_port = 5432
+db_user = odoo
+db_password = root
+
+; Timezone
+timezone = Asia/Yangon

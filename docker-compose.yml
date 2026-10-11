@@ -1,0 +1,31 @@
+services:
+  web:
+    image: odoo:18
+    container_name: odoo_hms_dev_web
+    ports:
+      - "8069:8069"
+    command: odoo -c /etc/odoo/odoo.conf --dev=xml,reload
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=root
+    volumes:
+      - .:/opt/custom-addons/odoo_hms
+      - ./odoo.conf.example:/etc/odoo/odoo.conf:ro
+      - odoo-web-dev-data:/var/lib/odoo
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16-alpine
+    container_name: odoo_hms_dev_db
+    environment:
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=postgres
+    volumes:
+      - odoo-db-dev-data:/var/lib/postgresql/data
+
+volumes:
+  odoo-web-dev-data:
+  odoo-db-dev-data:

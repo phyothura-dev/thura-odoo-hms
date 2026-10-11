@@ -1,0 +1,38 @@
+# Version control
+.git/
+.gitignore
+.dockerignore
+
+# Python cache and virtual environments
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+ENV/
+env/
+
+# Local logs and runtime data
+logs/
+*.log
+filestore/
+sessions/
+
+# Environment files and local configuration
+.env
+odoo.conf
+
+# IDE and operating-system files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Development-only files
+docker-compose.yml
+docker-compose.prod.yml
+docs/
+README.md
